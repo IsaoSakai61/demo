@@ -4,18 +4,29 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller //このクラスがWEBアプリケーションとして操作できるコントローラプログラムとして動作できるようになります。
 public class DemoController {
 	
-	@RequestMapping("/{num}") //http://localhost:8080/numでアクセスされた場合
-	public String index(@PathVariable int num, Model model) {	//ModelはWebページで使用するデータを管理するクラスです。
-		int sum = 0;
-		for(int i=0; i<=num; i++) {
-			sum += i;
-		}
-		model.addAttribute("msg","sum=" + sum);//ビュー側で第一引数で指定した名前でデータを取り出します。
-		return "index";		//resources/index.html
+	@RequestMapping(value="/",method=RequestMethod.GET) //http://localhost:8080/でアクセスされた場合(GET)
+	public ModelAndView index(ModelAndView mav) {	//Modelは戻り値を持たないため、ビューから値が返ってくる場合には、 ModelAndViewを使用します。
+		
+		mav.setViewName("index");	//resources/index.html
+		mav.addObject("msg","お名前を入力してください");
+		
+		return mav;		
+	}
+	@RequestMapping(value="/",method=RequestMethod.POST) //htmlからアクセスされた場合(POST)
+	public ModelAndView send(
+			@RequestParam("text1")String str,
+			ModelAndView mav) {
+		mav.setViewName("index");
+		mav.addObject("msg","こんにちは" + str + "さん！");	//ビューのmsgを書き換える
+		mav.addObject("value",str);
+		return mav;
 	}
 }
